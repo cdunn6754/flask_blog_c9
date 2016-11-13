@@ -1,7 +1,7 @@
-from flask_blog import app
+from flask_blog_c9 import app
 from flask import render_template, redirect, flash, url_for, session, request
 from blog.form import SetupForm, PostForm
-from flask_blog import db, uploaded_images
+from flask_blog_c9 import db, uploaded_images
 from author.models import Author
 from blog.models import Blog, Post, Category
 from author.decorators import login_required, author_required

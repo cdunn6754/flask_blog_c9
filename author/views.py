@@ -1,4 +1,4 @@
-from flask_blog import app, db
+from flask_blog_c9 import app, db
 from flask import render_template, redirect, session, request, url_for, flash
 from author.form import RegisterForm, LoginForm
 from author.models import Author
@@ -31,7 +31,7 @@ def login():
             else:
                 error = "Incorrect password"
         else:
-            error = "Author not found"
+            error = "Author profile not found"
     return render_template('author/login.html', form=form, error=error)
 
 @app.route('/register', methods=('GET', 'POST'))

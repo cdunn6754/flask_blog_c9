@@ -1,4 +1,4 @@
-from flask_blog import db
+from flask_blog_c9 import db
 
 class Author(db.Model):
     id = db.Column(db.Integer, primary_key=True)
