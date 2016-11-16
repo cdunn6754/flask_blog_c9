@@ -36,26 +36,29 @@ def setup():
     # grab the author that is currently logged in if there is one
     if session.get('username'):
         author = Author.query.filter_by(username = session.get('username')).first_or_404()
-        author.is_author = True
-        db.session.commit()
         form = SetupForm(obj=author)
         form.password.data = author.password
         form.confirm.data = author.password
 
     if form.validate_on_submit():
-        print ('we are geting inside validate on submit')
         salt = bcrypt.gensalt()
         hashed_password = bcrypt.hashpw(form.password.data, salt)
-        author = Author(
+        author_new = Author(
         form.fullname.data,
         form.email.data,
         form.username.data,
         hashed_password,
         True)
         
+        
+        # if we arent signed in then just use the author that we just created
         if not session.get('username'):
+            author = author_new
             db.session.add(author)
-            db.session.flush()
+        # if the author was signed in but is_author = false change it becasuse
+        # they are now
+        author.is_author = True
+        db.session.flush()
         if author.id:
             blog = Blog(form.name.data, author.id)
             db.session.add(blog)
