@@ -14,17 +14,16 @@
     <form method="POST" action="{{ url_for('setup')}}" role="form">
 
       {{ form.hidden_tag() }}
+      
+      <!-- we dont want the user trying to re-register if they are already
+      an author-->
+      
+      <!-- if they are logged in then just display the blog name creation, else
+      make them create an author account and a blog -->
 
       <h4>Blog Information</h4>
       {{ render_field(form.name, class='form-control') }}
       
-      <!-- we dont want the user trying to re-register if they are already
-      an author-->
-      {% if session['username']  %}
-      
-      <button type="submit" class="btn btn-default">Register</button>
-      
-      {% else %}
       <h4>Admin User</h4>
       {{ render_field(form.fullname, class='form-control') }}
       {{ render_field(form.email, class='form-control') }}
@@ -33,8 +32,6 @@
       {{ render_field(form.confirm, class='form-control') }}
 
       <button type="submit" class="btn btn-default">Register</button>
-      {% endif %}
-
     </form>
 
   </div>

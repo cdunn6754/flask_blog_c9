@@ -33,18 +33,29 @@ def setup():
     if blogs:
         return redirect(url_for('admin'))
     form = SetupForm()
+    # grab the author that is currently logged in if there is one
+    if session.get('username'):
+        author = Author.query.filter_by(username = session.get('username')).first_or_404()
+        author.is_author = True
+        db.session.commit()
+        form = SetupForm(obj=author)
+        form.password.data = author.password
+        form.confirm.data = author.password
+
     if form.validate_on_submit():
+        print ('we are geting inside validate on submit')
         salt = bcrypt.gensalt()
         hashed_password = bcrypt.hashpw(form.password.data, salt)
         author = Author(
-            form.fullname.data,
-            form.email.data,
-            form.username.data,
-            hashed_password,
-            True
-        )
-        db.session.add(author)
-        db.session.flush()
+        form.fullname.data,
+        form.email.data,
+        form.username.data,
+        hashed_password,
+        True)
+        
+        if not session.get('username'):
+            db.session.add(author)
+            db.session.flush()
         if author.id:
             blog = Blog(form.name.data, author.id)
             db.session.add(blog)
