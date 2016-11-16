@@ -4,7 +4,7 @@ from blog.form import SetupForm, PostForm
 from flask_blog_c9 import db, uploaded_images
 from author.models import Author
 from blog.models import Blog, Post, Category
-from author.decorators import login_required, author_required
+from author.decorators import login_required, author_required, author_of_post
 import bcrypt
 from slugify import slugify
 from flask_uploads import UploadNotAllowed
@@ -76,7 +76,7 @@ def setup():
     return render_template('blog/setup.html', form=form)
 
 @app.route('/post', methods=('GET', 'POST'))
-@author_required
+#@author_required
 def post():
     form = PostForm()
     if form.validate_on_submit():
@@ -111,6 +111,7 @@ def article(slug):
     
 @app.route('/edit/<int:post_id>', methods=('GET', 'POST'))
 @author_required
+@author_of_post
 def edit(post_id):
     post = Post.query.filter_by(id=post_id).first_or_404()
     form = PostForm(obj=post)
