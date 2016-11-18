@@ -1,6 +1,6 @@
 from flask_blog_c9 import app
 from flask import render_template, redirect, flash, url_for, session, request
-from blog.form import SetupForm, PostForm
+from blog.form import SetupForm, PostForm, CommentForm
 from flask_blog_c9 import db, uploaded_images
 from author.models import Author
 from blog.models import Blog, Post, Category
@@ -145,3 +145,18 @@ def delete(post_id):
     db.session.commit()
     flash("Article deleted")
     return redirect('/admin')
+    
+@app.route('/<post_slug>/comment', methods=('GET', 'POST'))
+#@author_required
+def comment(post_slug):
+    post = Post.query.filter_by(slug=post_slug).first_or_404() 
+    form = CommentForm()
+    if form.validate_on_submit():
+        print ('we got validated')
+        blog = Blog.query.first()
+        author = Author.query.filter_by(username=session['username']).first_or_404()
+        body = form.body.data
+        db.session.add(post)
+        db.session.commit()
+        return redirect(url_for('article', slug=post_slug))
+    return render_template('blog/comment.html', form=form, post=post, action="new")

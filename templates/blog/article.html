@@ -13,7 +13,8 @@
     {% if post.image %}
     <img src="{{ post.imgsrc }}" height="300px" class="img-rounded" />
     {% endif %}
-  
+
+
     <h3>{{ post.title }}</h3>
     {% if session.get('is_author') %}
       <a href="{{ url_for('edit', post_id=post.id) }}">Edit</a> -
@@ -21,9 +22,15 @@
     {% endif %}
     
     {{ post.body|markdown }}
+    
+    <h3>Comments</h3>
+      <a href="{{ url_for('comment', post_slug = post.slug) }}">Edit {{post.slug}}</a> -
 
-    <hr />
-    <div class="text-muted">Posted by <a href="#">{{ post.author.fullname }}</a> on {{ post.publish_date.strftime('%Y-%m-%d') }} in <a href="#">{{ post.category.name }}</a>
+
+
+   <hr />
+    <div class="text-muted">Posted by <a href="#">{{ post.author.fullname }}</a> 
+    on {{ post.publish_date.strftime('%Y-%m-%d') }} in <a href="#">{{ post.category.name }}</a>
     </div>
 
   </div>

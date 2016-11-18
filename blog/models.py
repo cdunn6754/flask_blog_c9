@@ -59,3 +59,22 @@ class Category(db.Model):
 
     def __repr__(self):
         return self.name
+        
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    blog_id = db.Column(db.Integer, db.ForeignKey('blog.id'))
+    author_id = db.Column(db.Integer, db.ForeignKey('author.id'))
+    body = db.Column(db.Text)
+    publish_date = db.Column(db.DateTime)
+    live = db.Column(db.Boolean)
+
+    def __init__(self, blog, author, body, publish_date=None, live=True):
+            self.blog_id = blog.id
+            self.author_id = author.id
+            self.body = body
+            if publish_date is None:
+                self.publish_date = datetime.utcnow()
+            self.live = live
+
+    def __repr__(self):
+        return '<Comment %r>' % self.title
