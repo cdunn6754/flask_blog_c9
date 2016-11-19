@@ -6,7 +6,7 @@
 
 <div class="row">
 
-  <div class="col-md-offset-3 col-md-6">
+  <div class="col-md-offset-1 col-md-8">
 
     {% include '_flashmessages.html' %}
     
@@ -15,7 +15,7 @@
     {% endif %}
 
 
-    <h3>{{ post.title }}</h3>
+    <h2>{{ post.title }}</h2>
     {% if session.get('is_author') %}
       <a href="{{ url_for('edit', post_id=post.id) }}">Edit</a> -
       <a href="{{ url_for('delete', post_id=post.id) }}">Delete</a>
@@ -23,15 +23,43 @@
     
     {{ post.body|markdown }}
     
-    <h3>Comments</h3>
-      <a href="{{ url_for('comment', post_slug = post.slug) }}">Edit {{post.slug}}</a> -
-
-
-
-   <hr />
+    <hr />
     <div class="text-muted">Posted by <a href="#">{{ post.author.fullname }}</a> 
     on {{ post.publish_date.strftime('%Y-%m-%d') }} in <a href="#">{{ post.category.name }}</a>
     </div>
+  </div>  
+</div>  
+  
+  <br>
+  <br>
+  
+<div class='row'>
+  
+  <div class="col-md-offset-2 col-md-6">  
+    <h3>Comments
+      <small><a href="{{ url_for('comment', post_slug = post.slug) }}">Post a Comment</a></small>
+    </h3>
+    <div class="post-list">
+      {% for comment in comments.items %}
+      <div class="row post-item">
+        <div class="col-md-9">
+          <h4> 
+            {% if not comment.live %}
+              (deleted)
+            {% endif %}
+          </h4>
+          <div class="post-body">
+            {{ comment.body[:220] }}
+          </div>
+          <div class="text-muted">
+            <small><small><a href="#">{{ comment.author.fullname }}</a> on {{ comment.publish_date.strftime('%Y-%m-%d') }} 
+            - <a href="{{ url_for('edit_comment', post_slug=post.slug, comment_id=comment.id) }}">edit</a></small></small>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
 
   </div>
 

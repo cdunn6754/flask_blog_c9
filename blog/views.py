@@ -3,13 +3,14 @@ from flask import render_template, redirect, flash, url_for, session, request
 from blog.form import SetupForm, PostForm, CommentForm
 from flask_blog_c9 import db, uploaded_images
 from author.models import Author
-from blog.models import Blog, Post, Category
+from blog.models import Blog, Post, Category, Comment
 from author.decorators import login_required, author_required, author_of_post
 import bcrypt
 from slugify import slugify
 from flask_uploads import UploadNotAllowed
 
 POSTS_PER_PAGE = 5
+COMMENTS_PER_PAGE = 5
 
 @app.route('/')
 @app.route('/index')
@@ -105,9 +106,12 @@ def post():
     return render_template('blog/post.html', form=form, action="new")
     
 @app.route('/article/<slug>')
-def article(slug):
+def article(slug, page=1):
     post = Post.query.filter_by(slug=slug).first_or_404()
-    return render_template('blog/article.html', post=post)
+    comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.publish_date.desc()).paginate(page, COMMENTS_PER_PAGE, False)
+    print(len(comments.items))
+    print ('HEREA       !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+    return render_template('blog/article.html', post=post, comments=comments)
     
 @app.route('/edit/<int:post_id>', methods=('GET', 'POST'))
 @author_required
@@ -152,11 +156,24 @@ def comment(post_slug):
     post = Post.query.filter_by(slug=post_slug).first_or_404() 
     form = CommentForm()
     if form.validate_on_submit():
-        print ('we got validated')
         blog = Blog.query.first()
         author = Author.query.filter_by(username=session['username']).first_or_404()
         body = form.body.data
-        db.session.add(post)
+        comment = Comment(blog,author,post,body)
+        db.session.add(comment)
         db.session.commit()
         return redirect(url_for('article', slug=post_slug))
     return render_template('blog/comment.html', form=form, post=post, action="new")
+    
+
+@app.route('/<post_slug>/edit_comment/<comment_id>', methods=('GET', 'POST'))
+#@author_required
+def edit_comment(post_slug,comment_id):
+    post = Post.query.filter_by(slug=post_slug).first_or_404()
+    comment = Comment.query.filter_by(id=comment_id).first_or_404()
+    form = CommentForm(obj=comment)
+    if form.validate_on_submit():
+        comment.body = form.body.data
+        db.session.commit()
+        return redirect(url_for('article', slug=post_slug))
+    return render_template('blog/comment.html', form=form, post=post, comment=comment, action="edi")

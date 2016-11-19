@@ -64,14 +64,16 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     blog_id = db.Column(db.Integer, db.ForeignKey('blog.id'))
     author_id = db.Column(db.Integer, db.ForeignKey('author.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
     body = db.Column(db.Text)
     publish_date = db.Column(db.DateTime)
     live = db.Column(db.Boolean)
 
-    def __init__(self, blog, author, body, publish_date=None, live=True):
+    def __init__(self, blog, author, post,  body, publish_date=None, live=True):
             self.blog_id = blog.id
             self.author_id = author.id
             self.body = body
+            self.post_id = post.id
             if publish_date is None:
                 self.publish_date = datetime.utcnow()
             self.live = live

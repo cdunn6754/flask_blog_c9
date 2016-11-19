@@ -11,8 +11,11 @@
     {% if action=="new" %}<h3>New Blog Post</h3>{% else %}<h3>Edit Blog Post</h3>{% endif %}
 
     {% from "_formhelpers.html" import render_field %}
-    {% if action=="new" %}<form method="POST" action="{{ url_for('post')}}" enctype="multipart/form-data" role="form">{% else %}<form method="POST" action="{{ url_for('edit', post_id=post.id)}}" enctype="multipart/form-data" role="form">
-      {% endif %}
+    {% if action=="new" %}
+      <form method="POST" action="{{ url_for('post')}}" enctype="multipart/form-data" role="form">
+    {% else %}
+      <form method="POST" action="{{ url_for('edit', post_id=post.id)}}" enctype="multipart/form-data" role="form">
+    {% endif %}
       {{ form.hidden_tag() }}
 
       {% if post and post.image %}
