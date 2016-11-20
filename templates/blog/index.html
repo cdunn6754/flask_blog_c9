@@ -3,6 +3,7 @@
 {% block title %}
 
 {% if blog %}
+Main Index for 
 {{ blog.name }}
 
 {% else %}
@@ -53,5 +54,21 @@ Index
   </div>
 
 </div>
+
+{% if not session['username'] %}
+<hr />
+<div class="row">
+
+  <div class="col-md-offset-4 col-md-3">
+    
+    <div style="color:red">
+    <h3> New User?</h3>
+    </div>
+    
+    <a href="{{ url_for('register')}}"> Create a new author profile</a>
+    
+  </div>
+</div>
+{% endif %}
 
 {% endblock %}

@@ -1,6 +1,5 @@
 from flask_wtf import Form
-from wtforms import validators, StringField, PasswordField
-from wtforms import validators, StringField, PasswordField, TextAreaField
+from wtforms import validators, StringField, PasswordField, TextAreaField, BooleanField
 from flask_wtf.file import FileField, FileAllowed
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.fields.html5 import EmailField
@@ -40,4 +39,6 @@ class PostForm(Form):
     new_category = StringField('New Category')
     
 class CommentForm(Form):
+    delete = BooleanField('Delete')
     body = TextAreaField('Content', validators=[validators.Required()])
+    

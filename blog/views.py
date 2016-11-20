@@ -4,7 +4,7 @@ from blog.form import SetupForm, PostForm, CommentForm
 from flask_blog_c9 import db, uploaded_images
 from author.models import Author
 from blog.models import Blog, Post, Category, Comment
-from author.decorators import login_required, author_required, author_of_post
+from author.decorators import login_required, author_required, author_of_post, author_of_this
 import bcrypt
 from slugify import slugify
 from flask_uploads import UploadNotAllowed
@@ -109,13 +109,10 @@ def post():
 def article(slug, page=1):
     post = Post.query.filter_by(slug=slug).first_or_404()
     comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.publish_date.desc()).paginate(page, COMMENTS_PER_PAGE, False)
-    print(len(comments.items))
-    print ('HEREA       !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
     return render_template('blog/article.html', post=post, comments=comments)
     
 @app.route('/edit/<int:post_id>', methods=('GET', 'POST'))
-@author_required
-@author_of_post
+@author_of_this(Post,'post_id')
 def edit(post_id):
     post = Post.query.filter_by(id=post_id).first_or_404()
     form = PostForm(obj=post)
@@ -151,7 +148,7 @@ def delete(post_id):
     return redirect('/admin')
     
 @app.route('/<post_slug>/comment', methods=('GET', 'POST'))
-#@author_required
+@author_required
 def comment(post_slug):
     post = Post.query.filter_by(slug=post_slug).first_or_404() 
     form = CommentForm()
@@ -167,13 +164,16 @@ def comment(post_slug):
     
 
 @app.route('/<post_slug>/edit_comment/<comment_id>', methods=('GET', 'POST'))
-#@author_required
+@author_of_this(Comment,'comment_id')
 def edit_comment(post_slug,comment_id):
     post = Post.query.filter_by(slug=post_slug).first_or_404()
     comment = Comment.query.filter_by(id=comment_id).first_or_404()
     form = CommentForm(obj=comment)
     if form.validate_on_submit():
+        delete = form.delete.data
+        if delete:
+            comment.live = False
         comment.body = form.body.data
         db.session.commit()
         return redirect(url_for('article', slug=post_slug))
-    return render_template('blog/comment.html', form=form, post=post, comment=comment, action="edi")
+    return render_template('blog/comment.html', form=form, post=post, comment=comment, action="edit")

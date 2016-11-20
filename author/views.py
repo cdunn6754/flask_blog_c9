@@ -46,11 +46,12 @@ def register():
             form.email.data,
             form.username.data,
             hashed_password,
-            False
+            True
         )
         db.session.add(author)
         db.session.commit()
-        return redirect('/success')
+        flash('Author profile sucessfully created')
+        return redirect(url_for('index'))
     return render_template('author/register.html', form=form)
 
 @app.route('/logout')
