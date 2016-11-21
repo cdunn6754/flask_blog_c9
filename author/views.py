@@ -1,8 +1,8 @@
 from flask_blog_c9 import app, db, uploaded_images
 from flask import render_template, redirect, session, request, url_for, flash
-from author.form import RegisterForm, LoginForm
+from author.form import RegisterForm, LoginForm, EditAuthorForm
 from author.models import Author
-from author.decorators import login_required
+from author.decorators import login_required, author_of_this
 import bcrypt
 
 @app.route('/login', methods=('GET', 'POST'))
@@ -61,7 +61,7 @@ def register():
         db.session.commit()
         flash('Author profile sucessfully created')
         return redirect(url_for('index'))
-    return render_template('author/register.html', form=form)
+    return render_template('author/register.html', form=form, action='new')
 
 @app.route('/logout')
 def logout():
@@ -70,11 +70,44 @@ def logout():
     flash("User logged out")
     return redirect(url_for('index'))
 
-@app.route('/success')
-def success():
-    return "Author registered!"
+@app.route('/author_page/<int:author_id>')
+def author_page(author_id):
+    author = Author.query.filter_by(id = author_id).first_or_404()
+    return render_template('author/author_page.html', author=author)
 
-@app.route('/login_success')
-@login_required
-def login_success():
-    return "Author logged in!"
+@app.route('/edit_author/<int:author_id>', methods=('GET', 'POST'))
+#@author_of_this(Author,'author_id')
+def edit_author(author_id):
+    author = Author.query.filter_by(id=author_id).first_or_404()
+    form = EditAuthorForm(obj=author)
+    error = None
+    
+    print (form.fullname.data)
+    
+    if form.validate_on_submit():
+        if bcrypt.hashpw(form.password.data, author.password) == author.password:
+            original_image = author.image
+            form.populate_obj(author)
+            if form.image.has_file():
+                image = request.files.get('image')
+                try:
+                    filename = uploaded_images.save(image)
+                except:
+                    flash("The image was not uploaded")
+                if filename:
+                    author.image = filename
+            else:
+                author.image = original_image
+            print( 'password had data: %s'  %str(form.password.data))
+            
+            if form.password.data:
+                salt = bcrypt.gensalt()
+                hashed_password = bcrypt.hashpw(form.password.data, salt)
+                author.password = hashed_password
+    
+            db.session.commit()
+            flash('Author profile sucessfully created')
+            return redirect(url_for('index'))
+        else:
+            error = 'Incorrrect Password'
+    return render_template('author/register.html', author=author,  form=form, error=error, action='edit')

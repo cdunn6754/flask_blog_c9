@@ -33,7 +33,8 @@ Index
           <div class="col-md-9">
             <h4><a href="{{ url_for('article', slug=post.slug) }}">{{ post.title }}</a></h4>
             <div class="post-body">{{ post.body[:220] }}</div>
-            <div class="text-muted">Posted by <a href="#">{{ post.author.fullname }}</a> on {{ post.publish_date.strftime('%Y-%m-%d') }} in <a href="#">{{ post.category.name }}</a>
+            <div class="text-muted">Posted by <a href="{{ url_for('author_page', author_id = post.author.id)}} ">{{ post.author.fullname }}</a> on 
+            {{ post.publish_date.strftime('%Y-%m-%d') }} in <a href="#">{{ post.category.name }}</a>
             </div>
           </div>
           <div class="col-md-3">
