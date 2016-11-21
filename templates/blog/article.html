@@ -48,6 +48,13 @@
       {% for comment in comments.items %}
       
       <div class="row post-item">
+        
+        {% if comment.author.image %}
+        <div class = "col-md-8">
+          <img src="{{comment.author.imgsrc}}" height="50px" class="img-rounded" />
+        </div>
+        {% endif %}
+        
         <div class="col-md-9">
           {% if comment.live %}
           <div class="post-body">

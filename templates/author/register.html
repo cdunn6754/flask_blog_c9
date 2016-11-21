@@ -11,10 +11,11 @@
     <h3>Author Registration</h3>
 
     {% from "_formhelpers.html" import render_field %}
-    <form method="POST" action="{{ url_for('register')}}" role="form">
+    <form method="POST" action="{{ url_for('register')}}" enctype="multipart/form-data"  role="form">
 
       {{ form.hidden_tag() }}
 
+      {{ render_field(form.image, class='form-control') }}
       {{ render_field(form.username, class='form-control') }}
       {{ render_field(form.email, class='form-control') }}
       {{ render_field(form.fullname, class='form-control') }}

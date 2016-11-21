@@ -1,4 +1,4 @@
-from flask_blog_c9 import app, db
+from flask_blog_c9 import app, db, uploaded_images
 from flask import render_template, redirect, session, request, url_for, flash
 from author.form import RegisterForm, LoginForm
 from author.models import Author
@@ -39,6 +39,14 @@ def login():
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
+        
+        image = request.files.get('image')
+        filename = None
+        try:
+            filename = uploaded_images.save(image)
+        except:
+            flash("The image was not uploaded")
+            
         salt = bcrypt.gensalt()
         hashed_password = bcrypt.hashpw(form.password.data, salt)
         author = Author(
@@ -46,7 +54,8 @@ def register():
             form.email.data,
             form.username.data,
             hashed_password,
-            True
+            True,
+            filename
         )
         db.session.add(author)
         db.session.commit()

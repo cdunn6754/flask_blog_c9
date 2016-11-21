@@ -1,8 +1,12 @@
 from flask_wtf import Form
 from wtforms import validators, StringField, PasswordField
+from flask_wtf.file import FileField, FileAllowed
 from wtforms.fields.html5 import EmailField
 
 class RegisterForm(Form):
+    image = FileField('Image', validators=[
+    FileAllowed(['jpg', 'png'], 'Images only!')
+    ])
     fullname = StringField('Full Name', [validators.Required()])
     email = EmailField('Email address', [validators.DataRequired(), validators.Email()])
     username = StringField('Username', [
