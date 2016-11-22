@@ -42,6 +42,7 @@ class EditAuthorForm(Form):
         ])
     new_password = PasswordField('New Password', [
             validators.EqualTo('new_confirm', message='Passwords must match'),
+            validators.Optional(), #for some reason Length was implying Required, this takes care of it
             validators.Length(min=4, max=80)
         ])
     new_confirm = PasswordField('Repeat Password')

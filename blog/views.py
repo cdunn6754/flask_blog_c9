@@ -107,9 +107,9 @@ def post():
     
 @app.route('/article/<slug>')
 def article(slug, page=1):
-    author = Author.query.filter_by(id=10).first_or_404()
-    print ( author.imgsrc)
     post = Post.query.filter_by(slug=slug).first_or_404()
+    # im going back at somepoint to put the authors picture near the post
+    author = Author.query.filter_by(id = post.author.id).first_or_404()
     comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.publish_date.desc()).paginate(page, COMMENTS_PER_PAGE, False)
     return render_template('blog/article.html', post=post, comments=comments)
     

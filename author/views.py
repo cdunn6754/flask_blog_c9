@@ -60,6 +60,9 @@ def register():
         db.session.add(author)
         db.session.commit()
         flash('Author profile sucessfully created')
+        session['username'] = form.username.data
+        session['is_author'] = author.is_author
+        session['author_id'] = author.id
         return redirect(url_for('index'))
     return render_template('author/register.html', form=form, action='new')
 
@@ -85,7 +88,7 @@ def edit_author(author_id):
     print (form.fullname.data)
     
     if form.validate_on_submit():
-        if bcrypt.hashpw(form.password.data, author.password) == author.password:
+        if bcrypt.hashpw(form.current_password.data, author.password) == author.password:
             original_image = author.image
             form.populate_obj(author)
             if form.image.has_file():
@@ -98,15 +101,14 @@ def edit_author(author_id):
                     author.image = filename
             else:
                 author.image = original_image
-            print( 'password had data: %s'  %str(form.password.data))
             
-            if form.password.data:
+            if form.new_password.data:
                 salt = bcrypt.gensalt()
-                hashed_password = bcrypt.hashpw(form.password.data, salt)
+                hashed_password = bcrypt.hashpw(form.new_password.data, salt)
                 author.password = hashed_password
     
             db.session.commit()
-            flash('Author profile sucessfully created')
+            flash('Author profile sucessfully updated')
             return redirect(url_for('index'))
         else:
             error = 'Incorrrect Password'
