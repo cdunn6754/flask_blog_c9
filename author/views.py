@@ -2,7 +2,7 @@ from flask_blog_c9 import app, db, uploaded_images
 from flask import render_template, redirect, session, request, url_for, flash
 from author.form import RegisterForm, LoginForm, EditAuthorForm
 from author.models import Author
-from author.decorators import login_required, author_of_this
+from author.decorators import login_required, author_of_this, right_author
 import bcrypt
 
 @app.route('/login', methods=('GET', 'POST'))
@@ -79,7 +79,7 @@ def author_page(author_id):
     return render_template('author/author_page.html', author=author)
 
 @app.route('/edit_author/<int:author_id>', methods=('GET', 'POST'))
-#@author_of_this(Author,'author_id')
+@right_author
 def edit_author(author_id):
     author = Author.query.filter_by(id=author_id).first_or_404()
     form = EditAuthorForm(obj=author)
