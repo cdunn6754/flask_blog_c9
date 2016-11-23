@@ -8,9 +8,8 @@ from author.decorators import login_required, author_required, author_of_post, a
 import bcrypt
 from slugify import slugify
 from flask_uploads import UploadNotAllowed
+from settings import POSTS_PER_PAGE, COMMENTS_PER_PAGE
 
-POSTS_PER_PAGE = 5
-COMMENTS_PER_PAGE = 5
 
 @app.route('/')
 @app.route('/index')
@@ -20,13 +19,15 @@ def index(page=1):
     posts = Post.query.filter_by(live=True).order_by(Post.publish_date.desc()).paginate(page, POSTS_PER_PAGE, False)
     return render_template('blog/index.html', blog=blog, posts=posts)
 
-@app.route('/admin')
-@app.route('/admin/<int:page>')
-@login_required
-@author_required
-def admin(page=1):
-    posts = Post.query.order_by(Post.publish_date.desc()).paginate(page, POSTS_PER_PAGE, False)
-    return render_template('blog/admin.html', posts=posts)
+# ADMIN page functionality has been replaced with author_page
+
+#@app.route('/admin')
+#@app.route('/admin/<int:page>')
+#@login_required
+#@author_required
+#def admin(page=1):
+#    posts = Post.query.order_by(Post.publish_date.desc()).paginate(page, POSTS_PER_PAGE, False)
+#    return render_template('blog/admin.html', posts=posts)
 
 @app.route('/setup', methods=('GET', 'POST'))
 def setup():

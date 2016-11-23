@@ -11,3 +11,6 @@ SQLALCHEMY_DATABASE_URI = DB_URI
 UPLOADED_IMAGES_DEST = '/home/ubuntu/workspace/flask_blog_c9/static/images'
 UPLOADED_IMAGES_URL = '/static/images/'
 SQLALCHEMY_TRACK_MODIFICATIONS= True
+
+POSTS_PER_PAGE = 5
+COMMENTS_PER_PAGE = 5

@@ -5,8 +5,7 @@ from author.models import Author
 from blog.models import Post
 from author.decorators import login_required, author_of_this, right_author
 import bcrypt
-
-POSTS_PER_PAGE = 5
+from settings import POSTS_PER_PAGE, COMMENTS_PER_PAGE
 
 @app.route('/login', methods=('GET', 'POST'))
 def login():
@@ -117,4 +116,4 @@ def edit_author(author_id):
             return redirect(url_for('index'))
         else:
             error = 'Incorrrect Password'
-    return render_template('author/register.html', author=author,  form=form, error=error, action='edit')
+    return render_template('author/register.html', author=author, form=form, error=error, action='edit')
