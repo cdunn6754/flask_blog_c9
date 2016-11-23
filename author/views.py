@@ -89,8 +89,6 @@ def edit_author(author_id):
     form = EditAuthorForm(obj=author)
     error = None
     
-    print (form.fullname.data)
-    
     if form.validate_on_submit():
         if bcrypt.hashpw(form.current_password.data, author.password) == author.password:
             original_image = author.image

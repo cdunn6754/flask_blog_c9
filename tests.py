@@ -6,7 +6,7 @@ import unittest
 import sqlalchemy
 from flask.ext.sqlalchemy import SQLAlchemy
 
-from flask_blog import app, db
+from flask_blog_c9 import app, db
 
 # need to add all models for db.create_all to work
 from author.models import *
@@ -73,7 +73,16 @@ class UserTest(unittest.TestCase):
             new_category=new_category,
             ),
         follow_redirects=True)
-
+        
+    def edit_author(self, author_id, fullname, email, username, password):
+        return self.app.post('edit_author/%s' %author_id, 
+        data=dict(current_password = password,
+        fullname=fullname,
+        email=email,
+        username=username
+        ),
+        follow_redirects=True)
+#######################################################################################################
     # Notice that our test functions begin with the word test;
     # this allows unittest to automatically identify the method as a test to run.
     def test_create_blog(self):
@@ -87,7 +96,7 @@ class UserTest(unittest.TestCase):
         rv = self.logout()
         assert 'User logged out' in str(rv.data)
         rv = self.login('john', 'test')
-        assert 'Author not found' in str(rv.data)
+        assert 'Author profile not found' in str(rv.data)
         rv = self.login('cdunn', 'wrong')
         assert 'Incorrect password' in str(rv.data)
 
@@ -99,9 +108,9 @@ class UserTest(unittest.TestCase):
         #rv = self.app.get('/admin', follow_redirects=True)
         #assert 'Welcome, jorge' in str(rv.data)
         
-        rv = self.logout()
+        self.logout()
         rv = self.register_user('John Doe', 'john@example.com', 'john', 'test', 'test')
-        assert 'Author registered!' in str(rv.data)
+        assert 'Author profile sucessfully created' in str(rv.data)
         
         # registering will automatically login the user
         self.logout()
@@ -109,8 +118,35 @@ class UserTest(unittest.TestCase):
         rv = self.login('john', 'test')
         assert 'User john logged in' in str(rv.data)
         
-        rv = self.app.get('/edit/1', follow_redirects=True)
+        
+    def test_posts_author_profile(self):
+        self.create_blog()
+        self.login('cdunn','test')
+        
+        rv = self.publish_post('hello this is the body test', 'Test Category', None, 'This is the test title')
+        assert "Blog post created" in str(rv.data)
+        
+        self.logout()
+        
+        self.register_user('John Doe', 'john@example.com', 'john', 'test', 'test')
+        
+        self.login('john','test')
+        
+        # try to edit the first guys post
+        rv = self.app.get('/edit_post/1', follow_redirects=True)
         assert "403 Forbidden" in str(rv.data)
+        
+        # now try to edit johns user profile with clint logged in
+        self.logout()
+        self.login('cdunn','test')
+        rv = self.app.get('/edit_author/2', follow_redirects=True)
+        assert "403 Forbidden" in str(rv.data)
+        
+        # now test that clint can edit his profile
+        rv = self.edit_author(1,'Clint Dunn', 'cdunn6754@yahoo.com', 'cdunn', 'test')
+        print(str(rv.data))
+        assert 'Author profile sucessfully updated' in str(rv.data)
+        
         
         
 

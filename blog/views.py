@@ -33,7 +33,7 @@ def index(page=1):
 def setup():
     blogs = Blog.query.count()
     if blogs:
-        return redirect(url_for('admin'))
+        return redirect(url_for('index'))
     form = SetupForm()
     # grab the author that is currently logged in if there is one
     if session.get('username'):
@@ -74,7 +74,7 @@ def setup():
             db.session.rollback()
             error = "Error creating blog"
         flash('Blog created')
-        return redirect('/admin')
+        return redirect(url_for('index'))
     return render_template('blog/setup.html', form=form)
 
 @app.route('/post', methods=('GET', 'POST'))
@@ -102,6 +102,7 @@ def post():
         post = Post(blog, author, title, body, category, filename, slug)
         db.session.add(post)
         db.session.commit()
+        flash("Blog post created")
         return redirect(url_for('article', slug=slug))
     return render_template('blog/post.html', form=form, action="new")
     
@@ -113,7 +114,7 @@ def article(slug, page=1):
     comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.publish_date.desc()).paginate(page, COMMENTS_PER_PAGE, False)
     return render_template('blog/article.html', post=post, comments=comments)
     
-@app.route('/edit/<int:post_id>', methods=('GET', 'POST'))
+@app.route('/edit_post/<int:post_id>', methods=('GET', 'POST'))
 @author_of_this(Post,'post_id')
 def edit(post_id):
     post = Post.query.filter_by(id=post_id).first_or_404()
