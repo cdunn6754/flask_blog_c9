@@ -20,11 +20,12 @@
         <hr />
         <footer>
           {% if session.get('username') %}
-            Logged in as {{ session['username'] }} -
+            Logged in as 
+            <a href="{{ url_for('author_page', author_id = session['author_id']) }}" >{{ session['username'] }}</a> -
           {% endif %}
           {% if session.get('username') %}  <a href="{{ url_for('logout') }}">Logout</a>
           {% else %}  <a href="{{ url_for('login') }}">Login</a>{% endif %}
-          - <a href="{{ url_for('index') }}">Index</a> -
+          - <a href="{{ url_for('index') }}">Index</a> 
           <small>Copyright 2016</small>
 
         </footer>

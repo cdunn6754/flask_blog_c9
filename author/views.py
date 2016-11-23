@@ -2,8 +2,11 @@ from flask_blog_c9 import app, db, uploaded_images
 from flask import render_template, redirect, session, request, url_for, flash
 from author.form import RegisterForm, LoginForm, EditAuthorForm
 from author.models import Author
+from blog.models import Post
 from author.decorators import login_required, author_of_this, right_author
 import bcrypt
+
+POSTS_PER_PAGE = 5
 
 @app.route('/login', methods=('GET', 'POST'))
 def login():
@@ -70,13 +73,15 @@ def register():
 def logout():
     session.pop('username')
     session.pop('is_author')
+    session.pop('author_id')
     flash("User logged out")
     return redirect(url_for('index'))
 
 @app.route('/author_page/<int:author_id>')
-def author_page(author_id):
+def author_page(author_id, page=1):
     author = Author.query.filter_by(id = author_id).first_or_404()
-    return render_template('author/author_page.html', author=author)
+    posts = Post.query.filter_by(author_id = author_id).order_by(Post.publish_date.desc()).paginate(page, POSTS_PER_PAGE, False)
+    return render_template('author/author_page.html', author=author, posts=posts)
 
 @app.route('/edit_author/<int:author_id>', methods=('GET', 'POST'))
 @right_author

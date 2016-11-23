@@ -54,7 +54,12 @@ def author_of_this(object_class, id_member):
         return wrapper
     return real_decorator
     
-
+    
+    
+# very similar to author_of_this
+# but for use with functions that are paramaterized with the author.id, rather 
+# than a member of a generic object that has author_id as a member (that is what 
+# author_of_this is used for)
 def right_author(f):
     @wraps(f)
     def wrapper(*args, **kwargs):

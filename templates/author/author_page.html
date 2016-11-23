@@ -12,6 +12,15 @@
 
     {% include '_flashmessages.html' %}
     
+    <h2>
+      <font color=#2B65EC>
+        Profile Page of 
+        <font color='maroon'>
+          {{author.fullname}}
+        </font>
+      </font>
+    </h2>
+    
     {% if author.id == session['author_id'] %}
       <a href="{{ url_for('edit_author', author_id = author.id)}} "> {{ author.fullname }} edit your profile</a>
     {% endif %}
@@ -23,8 +32,29 @@
 
     
     <hr />
-    <div class="text-muted">Posted by <a href="#">{{ author.fullname }}</a> 
+    
+    <h3>
+      Posts from {{author.fullname}}
+    </h3>
+    
+    <div class="post-list">
+      {% for post in posts.items %}
+      <div class="row post-item">
+        <div class="col-md-9">
+          <h4><a href="{{ url_for('article', slug=post.slug) }}">{{ post.title }}</a> {% if not post.live %}(deleted){% endif %}</h4>
+          <div class="post-body">{{ post.body[:220] }}</div>
+          <div class="text-muted">Posted on {{ post.publish_date.strftime('%Y-%m-%d') }} in <a href="#">{{ post.category.name }}</a>
+          </div>
+        </div>
+        <div class="col-md-3">
+          {% if post.image %}
+            <img src="{{ post.imgsrc }}" height="60px" class="img-rounded">
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
     </div>
+  
   </div>  
 </div>
 
