@@ -38,9 +38,9 @@ class UserTest(unittest.TestCase):
     def create_blog(self):
         return self.app.post('/setup', data=dict(
             name='My Test Blog',
-            fullname='Jorge Escobar',
-            email='jorge@fromzero.io',
-            username='jorge',
+            fullname='Clint Dunn',
+            email='cdunn6754@yahoo.com',
+            username='cdunn',
             password='test',
             confirm='test'
             ),
@@ -82,27 +82,37 @@ class UserTest(unittest.TestCase):
 
     def test_login_logout(self):
         self.create_blog()
-        rv = self.login('jorge', 'test')
-        assert 'User jorge logged in' in str(rv.data)
+        rv = self.login('cdunn', 'test')
+        assert 'User cdunn logged in' in str(rv.data)
         rv = self.logout()
         assert 'User logged out' in str(rv.data)
         rv = self.login('john', 'test')
         assert 'Author not found' in str(rv.data)
-        rv = self.login('jorge', 'wrong')
+        rv = self.login('cdunn', 'wrong')
         assert 'Incorrect password' in str(rv.data)
 
-    def test_admin(self):
+    def test_user_creation(self):
         self.create_blog()
-        self.login('jorge', 'test')
-        rv = self.app.get('/admin', follow_redirects=True)
-        assert 'Welcome, jorge' in str(rv.data)
+        self.login('cdunn', 'test')
+        
+        ## we dont have admin anymore
+        #rv = self.app.get('/admin', follow_redirects=True)
+        #assert 'Welcome, jorge' in str(rv.data)
+        
         rv = self.logout()
         rv = self.register_user('John Doe', 'john@example.com', 'john', 'test', 'test')
         assert 'Author registered!' in str(rv.data)
+        
+        # registering will automatically login the user
+        self.logout()
+        
         rv = self.login('john', 'test')
         assert 'User john logged in' in str(rv.data)
-        rv = self.app.get('/admin', follow_redirects=True)
+        
+        rv = self.app.get('/edit/1', follow_redirects=True)
         assert "403 Forbidden" in str(rv.data)
+        
+        
 
 if __name__ == '__main__':
     unittest.main()
