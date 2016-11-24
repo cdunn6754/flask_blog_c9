@@ -82,6 +82,10 @@ class UserTest(unittest.TestCase):
         username=username
         ),
         follow_redirects=True)
+        
+    def comment(self, post_slug, body):
+        return self.app.post('%s/comment' %post_slug, data = dict(
+            body = body), follow_redirects=True)
 #######################################################################################################
     # Notice that our test functions begin with the word test;
     # this allows unittest to automatically identify the method as a test to run.
@@ -123,7 +127,7 @@ class UserTest(unittest.TestCase):
         self.create_blog()
         self.login('cdunn','test')
         
-        rv = self.publish_post('hello this is the body test', 'Test Category', None, 'This is the test title')
+        rv = self.publish_post('title test', 'Test body', None, 'This is the test title')
         assert "Blog post created" in str(rv.data)
         
         self.logout()
@@ -144,9 +148,23 @@ class UserTest(unittest.TestCase):
         
         # now test that clint can edit his profile
         rv = self.edit_author(1,'Clint Dunn', 'cdunn6754@yahoo.com', 'cdunn', 'test')
-        print(str(rv.data))
         assert 'Author profile sucessfully updated' in str(rv.data)
         
+    def test_comments(self):
+        self.create_blog()
+        self.login('cdunn','test')
+        
+        #creating comment with no post
+        rv = self.comment('non_existant_post_slug','test body for comment')
+        assert '404 Not Found' in str(rv.data)
+        
+        # now create and test again
+        rv = self.publish_post('test title', 'Test body', None, 'test title')
+        assert "Blog post created" in str(rv.data)
+        
+        rv = self.comment('test-title','test body for comment')
+        print (rv.data)
+        assert 'Comment succesfully posted' in str(rv.data)        
         
         
 

@@ -162,6 +162,7 @@ def comment(post_slug):
         comment = Comment(blog,author,post,body)
         db.session.add(comment)
         db.session.commit()
+        flash('Comment succesfully posted')
         return redirect(url_for('article', slug=post_slug))
     return render_template('blog/comment.html', form=form, post=post, action="new")
     
