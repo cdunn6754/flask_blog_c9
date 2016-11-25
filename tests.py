@@ -86,6 +86,16 @@ class UserTest(unittest.TestCase):
     def comment(self, post_slug, body):
         return self.app.post('%s/comment' %post_slug, data = dict(
             body = body), follow_redirects=True)
+    
+    def edit_comment(self, post_slug, comment_id, body, delete = False):
+        return self.app.post("%s/edit_comment/%s" %(post_slug, comment_id), 
+            data = dict(
+                body = body,
+                delete = delete),
+                follow_redirects =True)
+            
+            
+            
 #######################################################################################################
     # Notice that our test functions begin with the word test;
     # this allows unittest to automatically identify the method as a test to run.
@@ -158,13 +168,16 @@ class UserTest(unittest.TestCase):
         rv = self.comment('non_existant_post_slug','test body for comment')
         assert '404 Not Found' in str(rv.data)
         
-        # now create and test again
-        rv = self.publish_post('test title', 'Test body', None, 'test title')
-        assert "Blog post created" in str(rv.data)
-        
+        # now create a post and test again
+        rv = self.publish_post('test title', 'Test body', None, 'test category')
+        assert "Blog post created" in str(rv.data)  #test post again
         rv = self.comment('test-title','test body for comment')
-        print (rv.data)
-        assert 'Comment succesfully posted' in str(rv.data)        
+        assert 'Comment succesfully posted' in str(rv.data) # should be able to comment now
+        
+        # now see if clint can edit his post (not deleting)
+        rv = self.edit_comment('test-title','1','new test comment body', False)
+        print (str(rv.data))
+        assert 'Comment deleted' in str(rv.data)  # new body should be in returned html
         
         
 

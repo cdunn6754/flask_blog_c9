@@ -14,7 +14,7 @@ Here is what I have changed, probably not an all inclusive list:
     - If you are signed into an author account when you go to setup it just takes
       that information rather than creating another new author
 2. Implemented the comments in the blog posts per the assignment. The comments are paginated on each individual post page. 
-3. Replaced the is_author system with two new decorators, author_of_this and right_author. Everyone who makes an account is now potentially an author
+3. Replaced the is_author system with two new decorators, 'author_of_this' and 'right_author'. Everyone who makes an account is now potentially an author
    
    -author_of_this is to decorate view fcns that handle editing objects (comments and posts) with a particular author
    (and therefore these objects must have an author_id member) it check the object author_id against session author.id 

@@ -107,11 +107,13 @@ def post():
     return render_template('blog/post.html', form=form, action="new")
     
 @app.route('/article/<slug>')
+@app.route('/article/<slug>/<int:page>')
 def article(slug, page=1):
     post = Post.query.filter_by(slug=slug).first_or_404()
     # im going back at somepoint to put the authors picture near the post
     author = Author.query.filter_by(id = post.author.id).first_or_404()
-    comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.publish_date.desc()).paginate(page, COMMENTS_PER_PAGE, False)
+    comments = Comment.query.filter_by(live=True).filter_by(post_id=post.id).order_by(Comment.publish_date.desc()).paginate(page, COMMENTS_PER_PAGE, False)
+    print (comments.total)
     return render_template('blog/article.html', post=post, comments=comments)
     
 @app.route('/edit_post/<int:post_id>', methods=('GET', 'POST'))
@@ -177,6 +179,9 @@ def edit_comment(post_slug,comment_id):
         delete = form.delete.data
         if delete:
             comment.live = False
+            flash('Comment deleted')
+        else:
+            flash('Comment succesfully updated')    
         comment.body = form.body.data
         db.session.commit()
         return redirect(url_for('article', slug=post_slug))
