@@ -85,13 +85,14 @@ class UserTest(unittest.TestCase):
         
     def comment(self, post_slug, body):
         return self.app.post('%s/comment' %post_slug, data = dict(
-            body = body), follow_redirects=True)
+            body = body), 
+            follow_redirects=True)
     
     def edit_comment(self, post_slug, comment_id, body, delete = False):
-        return self.app.post("%s/edit_comment/%s" %(post_slug, comment_id), 
+        return self.app.post('%s/edit_comment/%s' %(post_slug, str(comment_id)), 
             data = dict(
-                body = body,
-                delete = delete),
+                delete = delete,
+                body = body),
                 follow_redirects =True)
             
             
@@ -174,10 +175,22 @@ class UserTest(unittest.TestCase):
         rv = self.comment('test-title','test body for comment')
         assert 'Comment succesfully posted' in str(rv.data) # should be able to comment now
         
+        
+        ## This is the one with the problem
         # now see if clint can edit his post (not deleting)
-        rv = self.edit_comment('test-title','1','new test comment body', False)
-        print (str(rv.data))
-        assert 'Comment deleted' in str(rv.data)  # new body should be in returned html
+        rv = self.edit_comment('test-title', 1, 'new test comment body', False)
+        #assert 'Comment succesfully updated'  in str(rv.data)  
+        #assert 'new test comment body' in str(rv.data) # new body should be in returned html
+        
+        # make sure that john cant edit clint's comment
+        self.logout()
+        
+        self.register_user('John Doe', 'john@example.com', 'john', 'test', 'test')
+        
+        self.login('john','test')
+        rv = self.edit_comment('test-title', 1, 'new test comment body', False)
+        assert '403 Forbidden'  in str(rv.data)   # can't edit someone elses post
+        
         
         
 

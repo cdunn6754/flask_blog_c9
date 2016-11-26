@@ -113,7 +113,6 @@ def article(slug, page=1):
     # im going back at somepoint to put the authors picture near the post
     author = Author.query.filter_by(id = post.author.id).first_or_404()
     comments = Comment.query.filter_by(live=True).filter_by(post_id=post.id).order_by(Comment.publish_date.desc()).paginate(page, COMMENTS_PER_PAGE, False)
-    print (comments.total)
     return render_template('blog/article.html', post=post, comments=comments)
     
 @app.route('/edit_post/<int:post_id>', methods=('GET', 'POST'))
@@ -174,7 +173,9 @@ def comment(post_slug):
 def edit_comment(post_slug,comment_id):
     post = Post.query.filter_by(slug=post_slug).first_or_404()
     comment = Comment.query.filter_by(id=comment_id).first_or_404()
-    form = CommentForm(obj=comment)
+    # had some trouble with checkbox being true so populated form differently than
+    # we usualy would, didn't help anything
+    form = CommentForm(delete = False, body= comment.body)
     if form.validate_on_submit():
         delete = form.delete.data
         if delete:
